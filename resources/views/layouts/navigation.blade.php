@@ -26,6 +26,14 @@
                 Suppliers
             </a>
 
+            <a href="{{ route('admin.product-services.index') }}" class="{{ request()->routeIs('admin.product-services.*') ? 'bg-blue-50 text-primary border-primary' : 'border-transparent text-app-muted hover:bg-app-background hover:text-app-dark' }} flex items-center rounded-md border-l-4 px-4 py-2 text-sm font-medium">
+                Products & Services
+            </a>
+
+            <a href="{{ route('admin.budgets.index') }}" class="{{ request()->routeIs('admin.budgets.*') ? 'bg-blue-50 text-primary border-primary' : 'border-transparent text-app-muted hover:bg-app-background hover:text-app-dark' }} flex items-center rounded-md border-l-4 px-4 py-2 text-sm font-medium">
+                Budgets
+            </a>
+
             <a href="{{ route('admin.purchase-invoices.index') }}" class="{{ request()->routeIs('admin.purchase-invoices.*') ? 'bg-blue-50 text-primary border-primary' : 'border-transparent text-app-muted hover:bg-app-background hover:text-app-dark' }} flex items-center rounded-md border-l-4 px-4 py-2 text-sm font-medium">
                 Purchase Invoices
             </a>

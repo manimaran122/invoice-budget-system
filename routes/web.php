@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\BudgetController;
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\ProductServiceController;
 use App\Http\Controllers\Admin\PurchaseInvoiceController;
 use App\Http\Controllers\Admin\SalesInvoiceController;
 use App\Http\Controllers\Admin\SupplierController;
@@ -39,6 +41,18 @@ Route::middleware('auth')
             ->name('suppliers.data');
 
         Route::resource('suppliers', SupplierController::class)
+            ->except(['show']);
+
+        Route::get('/product-services/data', [ProductServiceController::class, 'data'])
+            ->name('product-services.data');
+
+        Route::resource('product-services', ProductServiceController::class)
+            ->except(['show']);
+
+        Route::get('/budgets/data', [BudgetController::class, 'data'])
+            ->name('budgets.data');
+
+        Route::resource('budgets', BudgetController::class)
             ->except(['show']);
 
         Route::get('/purchase-invoices/data', [PurchaseInvoiceController::class, 'data'])
