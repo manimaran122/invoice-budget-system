@@ -1,4 +1,3 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
@@ -11,8 +10,18 @@ export default {
 
     theme: {
         extend: {
-            fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+            colors: {
+                primary: '#2563EB',
+                success: '#16A34A',
+                warning: '#F59E0B',
+                danger: '#DC2626',
+                app: {
+                    background: '#F8FAFC',
+                    card: '#FFFFFF',
+                    dark: '#1E293B',
+                    muted: '#64748B',
+                    border: '#E2E8F0',
+                },
             },
         },
     },

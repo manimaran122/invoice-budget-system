@@ -1,3 +1,186 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --color-primary: #2563EB;
+    --color-success: #16A34A;
+    --color-warning: #F59E0B;
+    --color-danger: #DC2626;
+    --color-background: #F8FAFC;
+    --color-card: #FFFFFF;
+    --color-text-dark: #1E293B;
+    --color-text-muted: #64748B;
+    --color-border: #E2E8F0;
+}
+
+.dt-container .dt-search input,
+.dt-container .dt-length select,
+.dt-container .dt-input {
+    border-color: var(--color-border);
+    border-radius: 0.375rem;
+    color: var(--color-text-dark);
+}
+
+.dt-container .dt-layout-row {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin: 0 0 1rem;
+    width: 100%;
+}
+
+.dt-container .dt-layout-row:last-child {
+    margin: 1rem 0 0;
+}
+
+.dt-container .dt-layout-cell {
+    align-items: center;
+    display: flex;
+}
+
+.dt-container .dt-layout-table,
+.dt-container .dt-layout-full {
+    display: block;
+    width: 100%;
+}
+
+.dt-container .dt-layout-table .dt-layout-cell {
+    display: block;
+    width: 100%;
+}
+
+.dt-container .dt-layout-cell.dt-layout-end {
+    justify-content: flex-end;
+    margin-left: auto;
+}
+
+.dt-container .dt-length,
+.dt-container .dt-search {
+    align-items: center;
+    display: flex;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.dt-container .dt-search label,
+.dt-container .dt-length label {
+    align-items: center;
+    color: var(--color-text-dark);
+    display: flex;
+    gap: 0.5rem;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.dt-container .dt-search input {
+    margin-left: 0;
+    width: 16rem;
+}
+
+.dt-container table.dataTable {
+    table-layout: auto;
+    margin-top: 0;
+    width: 100% !important;
+}
+
+.dt-container table.dataTable th,
+.dt-container table.dataTable td {
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+}
+
+.dt-container table.dataTable th {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.dt-container table.dataTable td {
+    color: var(--color-text-dark);
+    font-size: 0.95rem;
+}
+
+.dt-container table.dataTable td:last-child {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.dt-container table.dataTable td:last-child a,
+.dt-container table.dataTable td:last-child form {
+    display: inline-block;
+}
+
+.dt-container table.dataTable td:last-child form {
+    margin-left: 0.75rem;
+}
+
+.dt-container .dt-info {
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.dt-container .dt-paging {
+    align-items: center;
+    display: flex;
+    gap: 0.25rem;
+    margin: 0;
+}
+
+.dt-container .dt-paging .dt-paging-button {
+    align-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: 0.375rem;
+    display: inline-flex;
+    justify-content: center;
+    min-height: 2rem;
+    min-width: 2rem;
+    padding: 0.25rem 0.6rem;
+    text-decoration: none !important;
+}
+
+@media (max-width: 767px) {
+    .dt-container .dt-layout-row,
+    .dt-container .dt-layout-cell,
+    .dt-container .dt-length,
+    .dt-container .dt-search,
+    .dt-container .dt-search label,
+    .dt-container .dt-length label {
+        align-items: stretch;
+        display: block;
+    }
+
+    .dt-container .dt-search input {
+        margin-top: 0.5rem;
+        width: 100%;
+    }
+
+    .dt-container table.dataTable {
+        min-width: 640px;
+    }
+
+    .dt-container .dt-layout-table {
+        overflow-x: auto;
+    }
+}
+
+.dt-container .dt-paging .dt-paging-button.current,
+.dt-container .dt-paging .dt-paging-button.current:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #FFFFFF !important;
+}
+
+.dt-container .dt-paging .dt-paging-button:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #FFFFFF !important;
+}
+
+table.dataTable > thead > tr > th,
+table.dataTable > thead > tr > td {
+    border-bottom-color: var(--color-border);
+    color: var(--color-text-muted);
+}

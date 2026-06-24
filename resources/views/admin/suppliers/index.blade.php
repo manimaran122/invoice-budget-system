@@ -1,0 +1,97 @@
+<x-app-layout>
+    @push('styles')
+        <link rel="stylesheet" href="{{ asset('vendor/datatables/dataTables.min.css') }}">
+    @endpush
+
+    <x-slot name="header">
+        <div class="flex items-center justify-between">
+            <h2 class="font-semibold text-xl text-app-dark leading-tight">
+                Suppliers
+            </h2>
+
+            <a href="{{ route('admin.suppliers.create') }}" class="inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
+                Add Supplier
+            </a>
+        </div>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-app-card border border-app-border overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <table id="suppliers-table" class="min-w-full divide-y divide-app-border">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-app-muted uppercase">#</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-app-muted uppercase">Name</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-app-muted uppercase">Email</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-app-muted uppercase">Phone</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-app-muted uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-app-border"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+        <script src="{{ asset('vendor/datatables/dataTables.min.js') }}"></script>
+        <script>
+            $(document).ready(function () {
+                $('#suppliers-table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: '{{ route('admin.suppliers.data') }}',
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                        { data: 'name', name: 'name' },
+                        { data: 'email', name: 'email' },
+                        { data: 'phone', name: 'phone' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false }
+                    ]
+                });
+
+                @if (session('success'))
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: @json(session('success')),
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                @endif
+
+                @if (session('error'))
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: @json(session('error'))
+                    });
+                @endif
+
+                $(document).on('submit', '.delete-supplier-form', function (event) {
+                    event.preventDefault();
+
+                    const form = this;
+                    const supplierName = $(form).data('supplier-name');
+
+                    Swal.fire({
+                        title: 'Delete supplier?',
+                        text: `Are you sure you want to delete ${supplierName}?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#DC2626',
+                        cancelButtonColor: '#64748B',
+                        confirmButtonText: 'Yes, delete it'
+                    }).then(function (result) {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        </script>
+    @endpush
+</x-app-layout>
