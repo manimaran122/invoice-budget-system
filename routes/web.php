@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BudgetController;
+use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\ProductServiceController;
@@ -112,6 +113,10 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
                 Route::patch('/{sales_invoice}', 'update')->name('update');
                 Route::put('/{sales_invoice}', 'update')->name('update');
                 Route::delete('/{sales_invoice}', 'destroy')->name('destroy');
+            });
+
+        Route::controller(CurrencyController::class)->prefix('currency-rates')->name('currency.')->group(function () {
+                Route::get('/', 'index')->name('index');
             });
     });
 

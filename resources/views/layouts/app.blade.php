@@ -17,8 +17,8 @@
 
             <div class="min-h-screen">
                 @isset($header)
-                    <header class="bg-app-card border-b border-app-border shadow-sm">
-                        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <header class="bg-app-background">
+                        <div class="max-w-7xl mx-auto pt-8 pb-4 px-4 sm:px-6 lg:px-8">
                             {{ $header }}
                         </div>
                     </header>

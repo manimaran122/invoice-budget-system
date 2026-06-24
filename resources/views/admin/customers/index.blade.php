@@ -83,7 +83,7 @@
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#DC2626',
-                        cancelButtonColor: '#64748B',
+                        cancelButtonColor: '#6B7280',
                         confirmButtonText: 'Yes, delete it'
                     }).then(function (result) {
                         if (result.isConfirmed) {
