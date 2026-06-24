@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Budget extends Model
 {
@@ -30,5 +31,10 @@ class Budget extends Model
         }
 
         return min(((float) $this->spent / (float) $this->amount) * 100, 100);
+    }
+
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class);
     }
 }
