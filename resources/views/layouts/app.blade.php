@@ -16,7 +16,6 @@
             @include('layouts.navigation')
 
             <div class="min-h-screen">
-                <!-- Page Heading -->
                 @isset($header)
                     <header class="bg-app-card border-b border-app-border shadow-sm">
                         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -24,8 +23,6 @@
                         </div>
                     </header>
                 @endisset
-
-                <!-- Page Content -->
                 <main>
                     {{ $slot }}
                 </main>

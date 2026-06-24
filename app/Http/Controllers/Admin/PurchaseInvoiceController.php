@@ -31,21 +31,23 @@ class PurchaseInvoiceController extends Controller
             ->editColumn('total', fn (PurchaseInvoice $purchaseInvoice) => number_format($purchaseInvoice->total, 2))
             ->editColumn('status', function (PurchaseInvoice $purchaseInvoice) {
                 $class = match ($purchaseInvoice->status) {
-                    'Paid' => 'text-success',
-                    'Overdue' => 'text-danger',
-                    default => 'text-warning',
+                    'Paid' => 'bg-green-100 text-success',
+                    'Overdue' => 'bg-red-100 text-danger',
+                    default => 'bg-yellow-100 text-warning',
                 };
 
-                return '<span class="font-semibold '.$class.'">'.$purchaseInvoice->status.'</span>';
+                return '<span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold '.$class.'">'.$purchaseInvoice->status.'</span>';
             })
             ->addColumn('action', function (PurchaseInvoice $purchaseInvoice) {
+                $showUrl = route('admin.purchase-invoices.show', $purchaseInvoice);
                 $editUrl = route('admin.purchase-invoices.edit', $purchaseInvoice);
                 $deleteUrl = route('admin.purchase-invoices.destroy', $purchaseInvoice);
                 $invoiceNumber = e($purchaseInvoice->invoice_number);
                 $csrf = csrf_token();
 
                 return <<<HTML
-                    <a href="{$editUrl}" class="text-primary hover:text-blue-700">Edit</a>
+                    <a href="{$showUrl}" class="text-success hover:text-green-700">View</a>
+                    <a href="{$editUrl}" class="ms-3 text-primary hover:text-blue-700">Edit</a>
                     <form method="POST" action="{$deleteUrl}" class="delete-purchase-invoice-form inline-block ms-3" data-invoice-number="{$invoiceNumber}">
                         <input type="hidden" name="_token" value="{$csrf}">
                         <input type="hidden" name="_method" value="DELETE">
@@ -55,6 +57,13 @@ class PurchaseInvoiceController extends Controller
             })
             ->rawColumns(['status', 'action'])
             ->make(true);
+    }
+
+    public function show(PurchaseInvoice $purchaseInvoice): View
+    {
+        $purchaseInvoice->load('supplier');
+
+        return view('admin.purchase-invoices.show', compact('purchaseInvoice'));
     }
 
     public function create(): View

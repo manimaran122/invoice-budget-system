@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\PurchaseInvoiceController;
+use App\Http\Controllers\Admin\SalesInvoiceController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProfileController;
@@ -43,8 +44,12 @@ Route::middleware('auth')
         Route::get('/purchase-invoices/data', [PurchaseInvoiceController::class, 'data'])
             ->name('purchase-invoices.data');
 
-        Route::resource('purchase-invoices', PurchaseInvoiceController::class)
-            ->except(['show']);
+        Route::resource('purchase-invoices', PurchaseInvoiceController::class);
+
+        Route::get('/sales-invoices/data', [SalesInvoiceController::class, 'data'])
+            ->name('sales-invoices.data');
+
+        Route::resource('sales-invoices', SalesInvoiceController::class);
     });
 
 require __DIR__.'/auth.php';

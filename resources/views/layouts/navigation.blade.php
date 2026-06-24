@@ -29,6 +29,10 @@
             <a href="{{ route('admin.purchase-invoices.index') }}" class="{{ request()->routeIs('admin.purchase-invoices.*') ? 'bg-blue-50 text-primary border-primary' : 'border-transparent text-app-muted hover:bg-app-background hover:text-app-dark' }} flex items-center rounded-md border-l-4 px-4 py-2 text-sm font-medium">
                 Purchase Invoices
             </a>
+
+            <a href="{{ route('admin.sales-invoices.index') }}" class="{{ request()->routeIs('admin.sales-invoices.*') ? 'bg-blue-50 text-primary border-primary' : 'border-transparent text-app-muted hover:bg-app-background hover:text-app-dark' }} flex items-center rounded-md border-l-4 px-4 py-2 text-sm font-medium">
+                Sales Invoices
+            </a>
         </nav>
 
         <div class="border-t border-app-border p-4">
