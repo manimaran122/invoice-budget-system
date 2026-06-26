@@ -22,8 +22,9 @@
                         <x-input-label for="type" value="Type" />
                         <select id="type" name="type" class="mt-1 block w-full rounded-md border-app-border shadow-sm focus:border-primary focus:ring-primary" required>
                             <option value="">Select type</option>
-                            <option value="Product" @selected(old('type', $productService->type) === 'Product')>Product</option>
-                            <option value="Service" @selected(old('type', $productService->type) === 'Service')>Service</option>
+                            @foreach (\App\Enums\ProductServiceType::cases() as $type)
+                                <option value="{{ $type->value }}" @selected(old('type', $productService->type) === $type->value)>{{ $type->value }}</option>
+                            @endforeach
                         </select>
                         <x-input-error :messages="$errors->get('type')" class="mt-2" />
                     </div>

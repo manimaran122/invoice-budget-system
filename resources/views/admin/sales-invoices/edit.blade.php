@@ -43,40 +43,7 @@
                         </div>
                     </div>
 
-                    <div class="grid gap-4 md:grid-cols-4">
-                        <div>
-                            <x-input-label for="subtotal" value="Subtotal" />
-                            <x-text-input id="subtotal" name="subtotal" type="number" step="0.01" min="0" class="invoice-amount mt-1 block w-full" value="{{ old('subtotal', $salesInvoice->subtotal) }}" required />
-                            <x-input-error :messages="$errors->get('subtotal')" class="mt-2" />
-                        </div>
-
-                        <div>
-                            <x-input-label for="tax" value="Tax" />
-                            <x-text-input id="tax" name="tax" type="number" step="0.01" min="0" class="invoice-amount mt-1 block w-full" value="{{ old('tax', $salesInvoice->tax) }}" />
-                            <x-input-error :messages="$errors->get('tax')" class="mt-2" />
-                        </div>
-
-                        <div>
-                            <x-input-label for="discount" value="Discount" />
-                            <x-text-input id="discount" name="discount" type="number" step="0.01" min="0" class="invoice-amount mt-1 block w-full" value="{{ old('discount', $salesInvoice->discount) }}" />
-                            <x-input-error :messages="$errors->get('discount')" class="mt-2" />
-                        </div>
-
-                        <div>
-                            <x-input-label value="Total" />
-                            <div id="total-preview" class="mt-1 rounded-md border border-app-border bg-app-background px-3 py-2 text-app-dark">{{ number_format($salesInvoice->total, 2) }}</div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <x-input-label for="status" value="Status" />
-                        <select id="status" name="status" class="mt-1 block w-full rounded-md border-app-border shadow-sm focus:border-primary focus:ring-primary" required>
-                            <option value="Pending" @selected(old('status', $salesInvoice->status) === 'Pending')>Pending</option>
-                            <option value="Paid" @selected(old('status', $salesInvoice->status) === 'Paid')>Paid</option>
-                            <option value="Overdue" @selected(old('status', $salesInvoice->status) === 'Overdue')>Overdue</option>
-                        </select>
-                        <x-input-error :messages="$errors->get('status')" class="mt-2" />
-                    </div>
+                    @include('admin.invoices._items-form', ['productServices' => $productServices, 'invoice' => $salesInvoice])
 
                     <div>
                         <x-input-label for="notes" value="Notes" />
@@ -93,21 +60,4 @@
         </div>
     </div>
 
-    @push('scripts')
-        <script>
-            $(document).ready(function () {
-                function updateTotal() {
-                    const subtotal = parseFloat($('#subtotal').val()) || 0;
-                    const tax = parseFloat($('#tax').val()) || 0;
-                    const discount = parseFloat($('#discount').val()) || 0;
-                    const total = subtotal + tax - discount;
-
-                    $('#total-preview').text(total.toFixed(2));
-                }
-
-                $('.invoice-amount').on('input', updateTotal);
-                updateTotal();
-            });
-        </script>
-    @endpush
 </x-app-layout>

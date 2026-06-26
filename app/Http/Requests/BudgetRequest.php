@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\BudgetType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,7 +17,7 @@ class BudgetRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'type' => ['required', Rule::in(['Monthly', 'Yearly'])],
+            'type' => ['required', Rule::enum(BudgetType::class)],
             'amount' => ['required', 'numeric', 'min:0'],
             'spent' => ['nullable', 'numeric', 'min:0'],
         ];

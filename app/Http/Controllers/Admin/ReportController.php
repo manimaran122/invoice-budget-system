@@ -2,91 +2,70 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\InvoiceStatus;
+use App\Helpers\LogHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ReportRequest;
 use App\Models\Budget;
 use App\Models\Expense;
 use App\Models\PurchaseInvoice;
 use App\Models\SalesInvoice;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Throwable;
 
 class ReportController extends Controller
 {
-    public function index(Request $request): View
+    public function index(ReportRequest $request): View
     {
-        $validated = $request->validate([
-            'from_date' => ['nullable', 'date'],
-            'to_date' => ['nullable', 'date', 'after_or_equal:from_date'],
-        ]);
+        $validated = $request->validated();
 
         $fromDate = $validated['from_date'] ?? null;
         $toDate = $validated['to_date'] ?? null;
 
-        $salesQuery = SalesInvoice::query();
-        $purchaseQuery = PurchaseInvoice::query();
-        $expenseQuery = Expense::query();
+        try {
+            $totalSales = (float) SalesInvoice::betweenInvoiceDates($fromDate, $toDate)->sum('total');
+            $totalPurchase = (float) PurchaseInvoice::betweenInvoiceDates($fromDate, $toDate)->sum('total');
+            $totalExpense = (float) Expense::betweenExpenseDates($fromDate, $toDate)->sum('amount');
+            $profitLoss = $totalSales - $totalPurchase - $totalExpense;
 
-        $this->applyDateFilter($salesQuery, 'invoice_date', $fromDate, $toDate);
-        $this->applyDateFilter($purchaseQuery, 'invoice_date', $fromDate, $toDate);
-        $this->applyDateFilter($expenseQuery, 'expense_date', $fromDate, $toDate);
+            $invoiceStatusSummary = collect(InvoiceStatus::cases())
+                ->map(function (InvoiceStatus $status) use ($fromDate, $toDate) {
+                    $sales = SalesInvoice::status($status->value)->betweenInvoiceDates($fromDate, $toDate);
+                    $purchases = PurchaseInvoice::status($status->value)->betweenInvoiceDates($fromDate, $toDate);
 
-        $totalSales = (float) $salesQuery->sum('total');
-        $totalPurchase = (float) $purchaseQuery->sum('total');
-        $totalExpense = (float) $expenseQuery->sum('amount');
-        $profitLoss = $totalSales - $totalPurchase - $totalExpense;
+                    return [
+                        'status' => $status->value,
+                        'sales_count' => $sales->count(),
+                        'purchase_count' => $purchases->count(),
+                    ];
+                });
 
-        $invoiceStatusSummary = collect(['Paid', 'Pending', 'Overdue'])
-            ->map(function (string $status) use ($fromDate, $toDate) {
-                $sales = SalesInvoice::query()->where('status', $status);
-                $purchases = PurchaseInvoice::query()->where('status', $status);
+            $budgetSummary = Budget::query()
+                ->withSum([
+                    'expenses as filtered_spent' => fn ($query) => $query->betweenExpenseDates($fromDate, $toDate),
+                ], 'amount')
+                ->orderBy('name')
+                ->get()
+                ->map(function (Budget $budget) {
+                    $spent = (float) ($budget->filtered_spent ?? 0);
+                    $amount = (float) $budget->amount;
+                    $remaining = max($amount - $spent, 0);
+                    $usage = $amount > 0 ? min(round(($spent / $amount) * 100), 100) : 0;
 
-                $this->applyDateFilter($sales, 'invoice_date', $fromDate, $toDate);
-                $this->applyDateFilter($purchases, 'invoice_date', $fromDate, $toDate);
+                    return [
+                        'name' => $budget->name,
+                        'type' => $budget->type,
+                        'amount' => $amount,
+                        'spent' => $spent,
+                        'remaining' => $remaining,
+                        'usage' => $usage,
+                    ];
+                });
+        } catch (Throwable $e) {
+            LogHelper::error('Failed to load reports page.', $e, ['from_date' => $fromDate, 'to_date' => $toDate]);
+            abort(500, 'Unable to load reports.');
+        }
 
-                return [
-                    'status' => $status,
-                    'sales_count' => $sales->count(),
-                    'purchase_count' => $purchases->count(),
-                ];
-            });
-
-        $budgetSummary = Budget::orderBy('name')
-            ->get()
-            ->map(function (Budget $budget) use ($fromDate, $toDate) {
-                $expenses = $budget->expenses();
-                $this->applyDateFilter($expenses, 'expense_date', $fromDate, $toDate);
-
-                $spent = (float) $expenses->sum('amount');
-                $amount = (float) $budget->amount;
-                $remaining = max($amount - $spent, 0);
-                $usage = $amount > 0 ? min(round(($spent / $amount) * 100), 100) : 0;
-
-                return [
-                    'name' => $budget->name,
-                    'type' => $budget->type,
-                    'amount' => $amount,
-                    'spent' => $spent,
-                    'remaining' => $remaining,
-                    'usage' => $usage,
-                ];
-            });
-
-        return view('admin.reports.index', compact(
-            'fromDate',
-            'toDate',
-            'totalSales',
-            'totalPurchase',
-            'totalExpense',
-            'profitLoss',
-            'invoiceStatusSummary',
-            'budgetSummary',
-        ));
-    }
-
-    private function applyDateFilter($query, string $column, ?string $fromDate, ?string $toDate): void
-    {
-        $query
-            ->when($fromDate, fn ($query) => $query->whereDate($column, '>=', $fromDate))
-            ->when($toDate, fn ($query) => $query->whereDate($column, '<=', $toDate));
+        return view('admin.reports.index', compact('fromDate', 'toDate', 'totalSales', 'totalPurchase', 'totalExpense', 'profitLoss', 'invoiceStatusSummary', 'budgetSummary'));
     }
 }

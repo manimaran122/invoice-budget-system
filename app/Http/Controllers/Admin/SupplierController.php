@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\LogHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SupplierRequest;
 use App\Models\Supplier;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Throwable;
 use Yajra\DataTables\Facades\DataTables;
@@ -32,12 +32,14 @@ class SupplierController extends Controller
                     $csrf = csrf_token();
 
                     return <<<HTML
-                        <a href="{$editUrl}" class="text-primary hover:text-blue-700">Edit</a>
-                        <form method="POST" action="{$deleteUrl}" class="delete-supplier-form inline-block ms-3" data-supplier-name="{$supplierName}">
+                        <div class="action-buttons">
+                        <a href="{$editUrl}" class="action-icon action-edit" title="Edit" aria-label="Edit supplier">&#9998;</a>
+                        <form method="POST" action="{$deleteUrl}" class="delete-supplier-form action-form" data-supplier-name="{$supplierName}">
                             <input type="hidden" name="_token" value="{$csrf}">
                             <input type="hidden" name="_method" value="DELETE">
-                            <button type="submit" class="text-danger hover:text-red-700">Delete</button>
+                            <button type="submit" class="action-icon action-delete" title="Delete" aria-label="Delete supplier">&#128465;</button>
                         </form>
+                        </div>
                     HTML;
                 })
                 ->editColumn('email', fn (Supplier $supplier) => $supplier->email ?? '-')
@@ -45,13 +47,9 @@ class SupplierController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         } catch (Throwable $e) {
-            Log::error('Failed to load supplier datatable.', [
-                'message' => $e->getMessage(),
-            ]);
+            LogHelper::error('Failed to load supplier datatable.', $e);
 
-            return response()->json([
-                'message' => 'Unable to load suppliers.',
-            ], 500);
+            return response()->json(['message' => 'Unable to load suppliers.'], 500);
         }
     }
 
@@ -67,19 +65,13 @@ class SupplierController extends Controller
         try {
             Supplier::create($validated);
         } catch (Throwable $e) {
-            Log::error('Failed to create supplier.', [
-                'message' => $e->getMessage(),
-                'data' => $validated,
-            ]);
+            LogHelper::error('Failed to create supplier.', $e, ['data' => $validated]);
 
-            return back()
-                ->withInput()
+            return back()->withInput()
                 ->with('error', 'Unable to create supplier. Please try again.');
         }
 
-        return redirect()
-            ->route('admin.suppliers.index')
-            ->with('success', 'Supplier created successfully.');
+        return back()->with('success', 'Supplier created successfully.');
     }
 
     public function edit(Supplier $supplier): View
@@ -94,20 +86,13 @@ class SupplierController extends Controller
         try {
             $supplier->update($validated);
         } catch (Throwable $e) {
-            Log::error('Failed to update supplier.', [
-                'message' => $e->getMessage(),
-                'supplier_id' => $supplier->id,
-                'data' => $validated,
-            ]);
+            LogHelper::error('Failed to update supplier.', $e, ['supplier_id' => $supplier->id, 'data' => $validated]);
 
-            return back()
-                ->withInput()
+            return back()->withInput()
                 ->with('error', 'Unable to update supplier. Please try again.');
         }
 
-        return redirect()
-            ->route('admin.suppliers.index')
-            ->with('success', 'Supplier updated successfully.');
+        return back()->with('success', 'Supplier updated successfully.');
     }
 
     public function destroy(Supplier $supplier): RedirectResponse
@@ -115,18 +100,11 @@ class SupplierController extends Controller
         try {
             $supplier->delete();
         } catch (Throwable $e) {
-            Log::error('Failed to delete supplier.', [
-                'message' => $e->getMessage(),
-                'supplier_id' => $supplier->id,
-            ]);
+            LogHelper::error('Failed to delete supplier.', $e, ['supplier_id' => $supplier->id]);
 
-            return redirect()
-                ->route('admin.suppliers.index')
-                ->with('error', 'Unable to delete supplier. Please try again.');
+            return back()->with('error', 'Unable to delete supplier. Please try again.');
         }
 
-        return redirect()
-            ->route('admin.suppliers.index')
-            ->with('success', 'Supplier deleted successfully.');
+        return back()->with('success', 'Supplier deleted successfully.');
     }
 }

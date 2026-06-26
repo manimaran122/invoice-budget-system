@@ -37,4 +37,9 @@ class Budget extends Model
     {
         return $this->hasMany(Expense::class);
     }
+
+    public static function totalRemaining(): float
+    {
+        return (float) self::sum('amount') - (float) self::sum('spent');
+    }
 }

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\LogHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CustomerRequest;
 use App\Models\Customer;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Throwable;
 use Yajra\DataTables\Facades\DataTables;
@@ -32,12 +32,14 @@ class CustomerController extends Controller
                     $csrf = csrf_token();
 
                     return <<<HTML
-                        <a href="{$editUrl}" class="text-primary hover:text-blue-700">Edit</a>
-                        <form method="POST" action="{$deleteUrl}" class="delete-customer-form inline-block ms-3" data-customer-name="{$customerName}">
+                        <div class="action-buttons">
+                        <a href="{$editUrl}" class="action-icon action-edit" title="Edit" aria-label="Edit customer">&#9998;</a>
+                        <form method="POST" action="{$deleteUrl}" class="delete-customer-form action-form" data-customer-name="{$customerName}">
                             <input type="hidden" name="_token" value="{$csrf}">
                             <input type="hidden" name="_method" value="DELETE">
-                            <button type="submit" class="text-danger hover:text-red-700">Delete</button>
+                            <button type="submit" class="action-icon action-delete" title="Delete" aria-label="Delete customer">&#128465;</button>
                         </form>
+                        </div>
                     HTML;
                 })
                 ->editColumn('email', fn (Customer $customer) => $customer->email ?? '-')
@@ -45,13 +47,9 @@ class CustomerController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         } catch (Throwable $e) {
-            Log::error('Failed to load customer datatable.', [
-                'message' => $e->getMessage(),
-            ]);
+            LogHelper::error('Failed to load customer datatable.', $e);
 
-            return response()->json([
-                'message' => 'Unable to load customers.',
-            ], 500);
+            return response()->json(['message' => 'Unable to load customers.'], 500);
         }
     }
 
@@ -63,23 +61,16 @@ class CustomerController extends Controller
     public function store(CustomerRequest $request): RedirectResponse
     {
         $validated = $request->validated();
-
         try {
             Customer::create($validated);
         } catch (Throwable $e) {
-            Log::error('Failed to create customer.', [
-                'message' => $e->getMessage(),
-                'data' => $validated,
-            ]);
+            LogHelper::error('Failed to create customer.', $e, ['data' => $validated]);
 
-            return back()
-                ->withInput()
+            return back()->withInput()
                 ->with('error', 'Unable to create customer. Please try again.');
         }
 
-        return redirect()
-            ->route('admin.customers.index')
-            ->with('success', 'Customer created successfully.');
+        return back()->with('success', 'Customer created successfully.');
     }
 
     public function edit(Customer $customer): View
@@ -90,24 +81,16 @@ class CustomerController extends Controller
     public function update(CustomerRequest $request, Customer $customer): RedirectResponse
     {
         $validated = $request->validated();
-
         try {
             $customer->update($validated);
         } catch (Throwable $e) {
-            Log::error('Failed to update customer.', [
-                'message' => $e->getMessage(),
-                'customer_id' => $customer->id,
-                'data' => $validated,
-            ]);
+            LogHelper::error('Failed to update customer.', $e, ['customer_id' => $customer->id, 'data' => $validated]);
 
-            return back()
-                ->withInput()
+            return back()->withInput()
                 ->with('error', 'Unable to update customer. Please try again.');
         }
 
-        return redirect()
-            ->route('admin.customers.index')
-            ->with('success', 'Customer updated successfully.');
+        return back()->with('success', 'Customer updated successfully.');
     }
 
     public function destroy(Customer $customer): RedirectResponse
@@ -115,18 +98,11 @@ class CustomerController extends Controller
         try {
             $customer->delete();
         } catch (Throwable $e) {
-            Log::error('Failed to delete customer.', [
-                'message' => $e->getMessage(),
-                'customer_id' => $customer->id,
-            ]);
+            LogHelper::error('Failed to delete customer.', $e, ['customer_id' => $customer->id]);
 
-            return redirect()
-                ->route('admin.customers.index')
-                ->with('error', 'Unable to delete customer. Please try again.');
+            return back()->with('error', 'Unable to delete customer. Please try again.');
         }
 
-        return redirect()
-            ->route('admin.customers.index')
-            ->with('success', 'Customer deleted successfully.');
+        return back()->with('success', 'Customer deleted successfully.');
     }
 }

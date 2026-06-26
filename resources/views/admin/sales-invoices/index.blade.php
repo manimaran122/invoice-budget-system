@@ -23,10 +23,10 @@
                         <div class="flex items-center gap-3">
                             <label for="status-filter" class="text-sm font-medium text-app-dark">Status</label>
                             <select id="status-filter" autocomplete="off" class="w-44 rounded-md border-app-border text-sm shadow-sm focus:border-primary focus:ring-primary">
-                            <option value="">All</option>
-                            <option value="Paid">Paid</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Overdue">Overdue</option>
+                                <option value="">All</option>
+                                @foreach (\App\Enums\InvoiceStatus::cases() as $status)
+                                    <option value="{{ $status->value }}">{{ $status->value }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>

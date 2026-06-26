@@ -38,11 +38,7 @@
     </x-slot>
 
     @php
-        $statusClass = match ($purchaseInvoice->status) {
-            'Paid' => 'bg-green-100 text-success',
-            'Overdue' => 'bg-red-100 text-danger',
-            default => 'bg-yellow-100 text-warning',
-        };
+        $statusClass = \App\Enums\InvoiceStatus::badgeClassFor($purchaseInvoice->status);
     @endphp
 
     <div class="py-12">
@@ -104,14 +100,23 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-app-border">
-                                <tr>
-                                    <td class="px-4 py-4 text-sm text-app-dark">Invoice Amount</td>
-                                    <td class="px-4 py-4 text-right text-sm text-app-dark">1</td>
-                                    <td class="px-4 py-4 text-right text-sm text-app-dark">{{ number_format($purchaseInvoice->subtotal, 2) }}</td>
-                                    <td class="px-4 py-4 text-right text-sm text-app-dark">{{ number_format($purchaseInvoice->tax, 2) }}</td>
-                                    <td class="px-4 py-4 text-right text-sm text-app-dark">{{ number_format($purchaseInvoice->discount, 2) }}</td>
-                                    <td class="px-4 py-4 text-right text-sm font-semibold text-app-dark">{{ number_format($purchaseInvoice->total, 2) }}</td>
-                                </tr>
+                                @forelse ($purchaseInvoice->items as $item)
+                                    <tr>
+                                        <td class="px-4 py-4 text-sm text-app-dark">
+                                            <div class="font-semibold">{{ $item->description }}</div>
+                                            <div class="text-xs text-app-muted">{{ $item->productService?->name ?? 'Manual item' }}</div>
+                                        </td>
+                                        <td class="px-4 py-4 text-right text-sm text-app-dark">{{ number_format($item->quantity, 2) }}</td>
+                                        <td class="px-4 py-4 text-right text-sm text-app-dark">{{ number_format($item->price, 2) }}</td>
+                                        <td class="px-4 py-4 text-right text-sm text-app-dark">{{ number_format($item->tax, 2) }}</td>
+                                        <td class="px-4 py-4 text-right text-sm text-app-dark">{{ number_format($item->discount, 2) }}</td>
+                                        <td class="px-4 py-4 text-right text-sm font-semibold text-app-dark">{{ number_format($item->total, 2) }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="px-4 py-6 text-center text-sm text-app-muted">No invoice items found.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -153,6 +158,8 @@
                     </div>
                 </div>
             </div>
+
+            @include('admin.invoices._payments', ['invoice' => $purchaseInvoice, 'paymentRoute' => route('admin.purchase-invoices.payments.store', $purchaseInvoice)])
         </div>
     </div>
 </x-app-layout>

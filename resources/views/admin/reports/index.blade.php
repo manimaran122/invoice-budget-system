@@ -72,11 +72,7 @@
                             <tbody class="divide-y divide-app-border">
                                 @foreach ($invoiceStatusSummary as $item)
                                     @php
-                                        $statusClass = match ($item['status']) {
-                                            'Paid' => 'bg-green-100 text-success',
-                                            'Overdue' => 'bg-red-100 text-danger',
-                                            default => 'bg-yellow-100 text-warning',
-                                        };
+                                        $statusClass = \App\Enums\InvoiceStatus::badgeClassFor($item['status']);
                                     @endphp
                                     <tr>
                                         <td class="px-4 py-4">

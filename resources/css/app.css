@@ -183,13 +183,16 @@ textarea:focus,
     white-space: nowrap;
 }
 
-.dt-container table.dataTable td:last-child a,
-.dt-container table.dataTable td:last-child form {
-    display: inline-block;
+.dt-container table.dataTable td:last-child .action-buttons {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
 }
 
-.dt-container table.dataTable td:last-child form {
-    margin-left: 0.75rem;
+.dt-container table.dataTable td:last-child .action-form {
+    display: inline-flex;
+    margin: 0;
 }
 
 .dt-container .dt-info {
@@ -259,4 +262,56 @@ table.dataTable > thead > tr > th,
 table.dataTable > thead > tr > td {
     border-bottom-color: var(--color-border);
     color: var(--color-text-muted);
+}
+
+.dt-container table.dataTable td:last-child .action-icon {
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: 0.625rem;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1rem;
+    font-weight: 700;
+    height: 2.25rem;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+    text-decoration: none !important;
+    transition: all 0.18s ease;
+    width: 2.25rem;
+}
+
+.dt-container table.dataTable td:last-child .action-view {
+    background: #DCFCE7;
+    color: var(--color-success) !important;
+}
+
+.dt-container table.dataTable td:last-child .action-edit {
+    background: #DBEAFE;
+    color: var(--color-primary) !important;
+}
+
+.dt-container table.dataTable td:last-child .action-delete {
+    background: #FEE2E2;
+    color: var(--color-danger) !important;
+}
+
+.dt-container table.dataTable td:last-child .action-icon:hover {
+    box-shadow: 0 8px 18px rgba(17, 24, 39, 0.12);
+    transform: translateY(-1px);
+}
+
+.dt-container table.dataTable td:last-child .action-view:hover {
+    background: var(--color-success);
+    color: #FFFFFF !important;
+}
+
+.dt-container table.dataTable td:last-child .action-edit:hover {
+    background: var(--color-primary);
+    color: #FFFFFF !important;
+}
+
+.dt-container table.dataTable td:last-child .action-delete:hover {
+    background: var(--color-danger);
+    color: #FFFFFF !important;
 }

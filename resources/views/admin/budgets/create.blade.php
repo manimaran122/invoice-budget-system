@@ -21,8 +21,9 @@
                         <x-input-label for="type" value="Type" />
                         <select id="type" name="type" class="mt-1 block w-full rounded-md border-app-border shadow-sm focus:border-primary focus:ring-primary" required>
                             <option value="">Select type</option>
-                            <option value="Monthly" @selected(old('type') === 'Monthly')>Monthly</option>
-                            <option value="Yearly" @selected(old('type') === 'Yearly')>Yearly</option>
+                            @foreach (\App\Enums\BudgetType::cases() as $type)
+                                <option value="{{ $type->value }}" @selected(old('type') === $type->value)>{{ $type->value }}</option>
+                            @endforeach
                         </select>
                         <x-input-error :messages="$errors->get('type')" class="mt-2" />
                     </div>
